@@ -13,8 +13,17 @@ app.use(express.static(path.join(__dirname, '../public')));
 io.on('connection', (socket) => {
     console.log('New user to connect');
 
+    socket.emit('newEmail', {
+        from: 'test@test.com',
+        text: 'hello world',
+        createdAt: 123
+    });
+
+    socket.on('createEmail', (email) => {
+        console.log('recieved data from client: ', email);
+    });
+
     socket.on('disconnect', () => {
-        debugger;
         console.log('User was disconnected');
     });
 });
