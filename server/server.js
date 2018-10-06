@@ -13,14 +13,21 @@ app.use(express.static(path.join(__dirname, '../public')));
 io.on('connection', (socket) => {
     console.log('New user to connect');
 
-    socket.emit('newEmail', {
-        from: 'test@test.com',
-        text: 'hello world',
-        createdAt: 123
+    socket.emit('newMessage', {
+        from: 'Admin',
+        text: 'Welcome to the chat app'
     });
 
-    socket.on('createEmail', (email) => {
-        console.log('recieved data from client: ', email);
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin',
+        text: 'New user joined'
+    });
+
+    socket.on('createMessage', (message) => {
+        //all clients can recieve the message from server
+        io.emit('newMessage', Object.assign({}, message, {createdAt: new Date().getTime()}));
+        //other clients can recieve the message from server
+        // socket.broadcast.emit('newMessage', Object.assign({}, message, {createdAt: new Date().getTime()}));
     });
 
     socket.on('disconnect', () => {
