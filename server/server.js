@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const socketIO = require('socket.io');
-const {generateMessage,generateLocationMessage} = require('./utils');
+const {generateMessage, generateLocationMessage} = require('./utils');
 
 const app = express();
 const server = http.createServer(app);
@@ -26,8 +26,9 @@ io.on('connection', (socket) => {
         callback();
     });
 
-    socket.on('createGeolocation', function (coords) {
+    socket.on('createGeolocation', function (coords,callback) {
         io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
+        callback();
     });
 
     socket.on('disconnect', () => {
