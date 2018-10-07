@@ -37,15 +37,25 @@ io.on('connection', (socket) => {
     });
 
     socket.on('createMessage', (message, callback) => {
-        //all clients can recieve the message from server
-        io.emit('newMessage', generateMessage(message.from, message.text));
+        var joinedUser = user.getUser(socket.id);
+
+        if(joinedUser && isRealString(message.text)){
+            //all clients can recieve the message from server
+            io.to(joinedUser.room).emit('newMessage', generateMessage(message.from, message.text));
+        }
+
         //other clients can recieve the message from server
         // socket.broadcast.emit('newMessage', Object.assign({}, message, {createdAt: new Date().getTime()}));
         callback();
     });
 
     socket.on('createGeolocation', function (coords, callback) {
-        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
+        var joinedUser = user.getUser(socket.id);
+
+        if(joinedUser){
+            io.to(joinedUser.room).emit('newLocationMessage', generateLocationMessage(joinedUser.name, coords.latitude, coords.longitude));
+        }
+
         callback();
     });
 
